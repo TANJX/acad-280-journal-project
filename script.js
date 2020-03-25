@@ -48,7 +48,7 @@ function fetch() {
   xmlhttp.onreadystatechange = function () {
     if (this.readyState === 4 && this.status === 200) {
       mouseLocation = JSON.parse(this.responseText);
-      // TODO update left col
+      // TODO update left col. The app list
 
       state = 1;
     }
