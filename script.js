@@ -52,7 +52,7 @@ function fetch() {
   req1.onreadystatechange = function () {
     if (this.readyState === 4) {
       if (this.status === 200) {
-        mouseLocation = JSON.parse(this.responseText).locations.filter(l => l.processId === 0);
+        mouseLocation = JSON.parse(this.responseText).locations.filter(l => l.processId === 3);
         // TODO update left col. The app list
 
 
@@ -152,7 +152,15 @@ function drawLoading() {
   textSize(20);
   textAlign(CENTER);
   text('L O A D I N G ...', width / 2, height / 2);
+
   updateLoadingBar();
+
+  // count down from 100 to 0, then state 1
+  if (loading_complete_count === 0) {
+    state = 1;
+  } else if (loading_complete_count > 0) {
+    loading_complete_count--;
+  }
 }
 
 function drawLoadFailed() {
