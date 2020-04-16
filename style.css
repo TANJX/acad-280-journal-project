@@ -8,6 +8,7 @@ body {
 
 * {
   box-sizing: border-box;
+  user-select: none;
 }
 
 h1, p {
@@ -34,8 +35,18 @@ h1, p {
 .app {
   display: flex;
   align-items: center;
-  background-color: #b16243;
+  background-color: #8a8a8a;
   padding: 10px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.app:hover {
+  background-color: #ec8a54;
+}
+
+.app.selected {
+  background-color: #b16243;
 }
 
 .app .left {

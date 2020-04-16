@@ -9,8 +9,8 @@ let process = {};
 
 /**
  * sample object
+ [
  {
-  illustrator: {
     icon: '/img/ai.png',
     name: 'Adobe Illustrator',
     locations: [
@@ -20,7 +20,7 @@ let process = {};
       [1580281103.5818355, 603, 1183],
     ]
   },
-  aftereffects: {
+ {
     icon: '/img/ae.png',
     name: 'Adobe After Effects',
     locations: [
@@ -30,7 +30,7 @@ let process = {};
       [1580281103.5818355, 603, 1183],
     ]
   }
-};
+ ];
 
  */
 
@@ -43,7 +43,7 @@ let process = {};
  */
 let state = 0;
 
-let selectedApp;
+let selectedApp = 0;
 
 
 function fetch() {
@@ -52,10 +52,50 @@ function fetch() {
   req1.onreadystatechange = function () {
     if (this.readyState === 4) {
       if (this.status === 200) {
-        mouseLocation = JSON.parse(this.responseText).locations.filter(l => l.processId === 3);
-        // TODO update left col. The app list
+        mouseLocation = JSON.parse(this.responseText).locations;
+        const apps_div = document.querySelector('.apps');
+        let child = apps_div.lastElementChild;
+        while (child) {
+          apps_div.removeChild(child);
+          child = apps_div.lastElementChild;
+        }
+        let count = 0;
 
+        mouseLocation.forEach((app) => {
+          const app_div = document.createElement('div');
+          app_div.classList.add('app');
+          const left_div = document.createElement('div');
+          left_div.classList.add('left');
+          const right_div = document.createElement('div');
+          right_div.classList.add('right');
+          const img = document.createElement('img');
+          img.setAttribute('src', `img/${app.icon}`);
+          const p = document.createElement('p');
+          p.textContent = app.name;
+          p.classList.add('app-title');
+          left_div.appendChild(img);
+          right_div.appendChild(p);
+          app_div.appendChild(left_div);
+          app_div.appendChild(right_div);
+          app_div.setAttribute('data-id', '' + count);
+          count++;
+          app_div.addEventListener('click', (ev) => {
+            let ele = ev.target;
+            while (!ele.classList.contains('app')) {
+              ele = ele.parentElement;
+            }
+            if (!ele.classList.contains('selected')) {
+              document.querySelector('.app.selected').classList.remove('selected');
+              selectedApp = parseInt(ele.getAttribute('data-id'));
+              drawGraphCounter = 0;
+              drawComplete = false;
+              ele.classList.add('selected');
+            }
+          });
+          apps_div.appendChild(app_div);
+        });
 
+        document.querySelector(`.app[data-id="${selectedApp}"]`).classList.add('selected');
         loading_complete_count = 100; // ready to go to state 1
       } else {
         state = -1;
@@ -114,7 +154,7 @@ function windowResized() {
     container_offset = (width - container_width) / 2;
     container_offset_direction = false;
   }
-
+  drawComplete = false;
   resizeCanvas(width, height);
 }
 
@@ -176,25 +216,45 @@ function drawLoadFailed() {
   }
 }
 
-function drawGraph() {
-  let last_location;
-  // assume in the order of time
+let drawGraphCounter = 0;
+let drawComplete = false;
 
-  for (const location of mouseLocation) {
-    const x = location.positionX / MOUSELOCATION_DIMENSION[0] * container_width
+// TODO: OPTIMIZE DON'T RERENDER EVERY FRAME, ADDON INSTEAD
+function drawGraph() {
+  if (drawComplete) {
+    return;
+  }
+  let count = 0;
+  let last_location;
+  for (const location of mouseLocation[selectedApp].locations) {
+    // if (count >= drawGraphCounter) break;
+    const x = location[1] / MOUSELOCATION_DIMENSION[0] * container_width
       + (container_offset_direction ? 0 : container_offset);
-    const y = location.positionY / MOUSELOCATION_DIMENSION[1] * container_height
+    const y = location[2] / MOUSELOCATION_DIMENSION[1] * container_height
       + (container_offset_direction ? container_offset : 0);
     noStroke();
     fill('#fff');
-    circle(x, y, 2);
-    stroke('#989898');
+    circle(x, y, 1.1);
 
-    if (last_location && location.time - last_location[2] < 0.5) {
+    strokeWeight(10);
+    stroke(`hsla(0, 100%, 50%, 0.05)`);
+
+    strokeWeight(100);
+    stroke(`hsla(${count % 360},70%,60%,0.005)`);
+
+
+    if (last_location && location[0] - last_location[2] < 0.5) {
       line(x, y, last_location[0], last_location[1]);
     }
-    last_location = [x, y, location.time];
+    last_location = [x, y, location[0]];
+    count++;
   }
+  drawGraphCounter += Math.min(5, Math.max((Math.abs(mouseLocation[selectedApp].locations.length / 50)), 1));
+  if (drawGraphCounter >= mouseLocation[selectedApp].locations.length) {
+    drawComplete = true;
+    return;
+  }
+  drawComplete = false;
 }
 
 function switchApp(newApp) {
@@ -202,15 +262,17 @@ function switchApp(newApp) {
 }
 
 function draw() {
-  fill('#333');
-  noStroke();
-  rect(0, 0, width, height);
-  fill(BACKGROUND_COLOR);
-  noStroke();
-  if (container_offset_direction)
-    rect(0, container_offset, container_width, container_height);
-  else
-    rect(container_offset, 0, container_width, container_height);
+  if (!drawComplete) {
+    fill('#333');
+    noStroke();
+    rect(0, 0, width, height);
+    fill(BACKGROUND_COLOR);
+    noStroke();
+    if (container_offset_direction)
+      rect(0, container_offset, container_width, container_height);
+    else
+      rect(container_offset, 0, container_width, container_height);
+  }
   switch (state) {
     case 0:
       drawLoading();
