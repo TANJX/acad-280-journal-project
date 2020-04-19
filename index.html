@@ -8,23 +8,35 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,600,900&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="left-col">
-  <div class="apps">
 
+<div class="wrapper">
+  <div class="sketch" id="sketch"></div>
+  <div class="left-col">
+    <h1>Mouse Tracker</h1>
+    <h2>A JOURNAL PROJECT BY MARS TAN</h2>
   </div>
-  <div class="facts">
-    <h1>The Journal Project</h1>
-  </div>
-</div>
-<div class="center-col">
-  <div class="main" id="sketch">
-
-  </div>
-  <div class="controls">
+  <div class="right-col">
 
   </div>
 </div>
+<div class="app-list-wrapper">
+  <div class="app-list"></div>
+</div>
+
 <script src="p5.min.js"></script>
+<script>
+const app_list_div = document.querySelector('.app-list');
+document.querySelector('.app-list').addEventListener('wheel', (e) => {
+  let w = app_list_div.scrollLeft + e.deltaY * 3;
+  if (w > app_list_div.scrollWidth) w = app_list_div.scrollWidth;
+  if (w < 0) w = 0;
+  console.log(w);
+  app_list_div.scrollTo({
+    left: w,
+    behavior: 'smooth'
+  });
+})
+</script>
 <script src="script.js"></script>
 </body>
 </html>

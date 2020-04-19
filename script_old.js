@@ -1,6 +1,6 @@
 const DEBUG = true;
-const BACKEND_URL = 'https://api.marstanjx.com/acad280';
-// const BACKEND_URL = 'http://localhost:8080/acad280';
+// const BACKEND_URL = 'https://api.marstanjx.com/acad280';
+const BACKEND_URL = 'http://localhost:8080/acad280';
 const BACKGROUND_COLOR = '#393939';
 const MOUSELOCATION_DIMENSION = [2560, 1440];
 
@@ -53,9 +53,7 @@ function fetch() {
     if (this.readyState === 4) {
       if (this.status === 200) {
         mouseLocation = JSON.parse(this.responseText).locations;
-        const apps_div = document.querySelector('.app-list');
-
-        // remove all children
+        const apps_div = document.querySelector('.apps');
         let child = apps_div.lastElementChild;
         while (child) {
           apps_div.removeChild(child);
@@ -64,21 +62,12 @@ function fetch() {
         let count = 0;
 
         mouseLocation.forEach((app) => {
-
-          const app_div_wrapper = document.createElement('div');
-          app_div_wrapper.classList.add('app-card-wrapper');
-
           const app_div = document.createElement('div');
-          app_div.classList.add('app-card');
-
-
-          const img_div = document.createElement('div');
-          img_div.classList.add('app-img-div');
-          img_div.style.backgroundImage = "url('img/sample-ss.png')";
-
-          const info_div = document.createElement('div');
-          info_div.classList.add('app-info-div');
-
+          app_div.classList.add('app');
+          const left_div = document.createElement('div');
+          left_div.classList.add('left');
+          const right_div = document.createElement('div');
+          right_div.classList.add('right');
           const img = document.createElement('img');
           img.setAttribute('src', `img/${app.icon}`);
           img.onerror = function () {
@@ -86,22 +75,20 @@ function fetch() {
           };
           const p = document.createElement('p');
           p.textContent = app.name;
-          p.classList.add('app-name');
-          info_div.appendChild(img);
-          info_div.appendChild(p);
-
-          app_div.appendChild(img_div);
-          app_div.appendChild(info_div);
+          p.classList.add('app-title');
+          left_div.appendChild(img);
+          right_div.appendChild(p);
+          app_div.appendChild(left_div);
+          app_div.appendChild(right_div);
           app_div.setAttribute('data-id', '' + count);
           count++;
-
           app_div.addEventListener('click', (ev) => {
             let ele = ev.target;
-            while (!ele.classList.contains('app-card')) {
+            while (!ele.classList.contains('app')) {
               ele = ele.parentElement;
             }
             if (!ele.classList.contains('selected')) {
-              document.querySelector('.app-card.selected').classList.remove('selected');
+              document.querySelector('.app.selected').classList.remove('selected');
               selectedApp = parseInt(ele.getAttribute('data-id'));
               drawGraphCounter = 0;
               drawComplete = false;
@@ -109,11 +96,10 @@ function fetch() {
               ele.classList.add('selected');
             }
           });
-          app_div_wrapper.appendChild(app_div);
-          apps_div.appendChild(app_div_wrapper);
+          apps_div.appendChild(app_div);
         });
 
-        document.querySelector(`.app-card[data-id="${selectedApp}"]`).classList.add('selected');
+        document.querySelector(`.app[data-id="${selectedApp}"]`).classList.add('selected');
         loading_complete_count = 100; // ready to go to state 1
       } else {
         state = -1;
@@ -154,25 +140,7 @@ function setup() {
   windowResized();
 }
 
-const sketch_div = document.getElementById('sketch');
-
 function windowResized() {
-  const _w = document.body.clientWidth - 400;
-  const _h = document.body.clientHeight - 330;
-
-  let canvas_width = _w;
-  let canvas_height = _w / 16 * 9;
-
-  if (canvas_height > _h) {
-    canvas_height = _h;
-    canvas_width = _h * 16 / 9;
-  }
-
-  sketch_div.style.height = `${canvas_height}px`;
-  sketch_div.style.width = `${canvas_width}px`;
-
-  console.log(canvas_width, canvas_height);
-
   width = element_sketch.clientWidth;
   height = element_sketch.clientHeight;
 
