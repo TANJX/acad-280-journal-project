@@ -1,4 +1,3 @@
-const DEBUG = true;
 const BACKEND_URL = 'https://api.marstanjx.com/acad280';
 // const BACKEND_URL = 'http://localhost:8080/acad280';
 const BACKGROUND_COLOR = '#393939';
@@ -155,6 +154,8 @@ function setup() {
 }
 
 const sketch_div = document.getElementById('sketch');
+const controls_div = document.querySelector('.controls');
+const controls_wrapper_div = document.querySelector('.controls-wrapper');
 
 function windowResized() {
   const _w = document.body.clientWidth - 400;
@@ -167,6 +168,8 @@ function windowResized() {
     canvas_height = _h;
     canvas_width = _h * 16 / 9;
   }
+  controls_div.style.width = `${_w - 100}px`;
+  controls_wrapper_div.style.width = `${_w}px`;
 
   sketch_div.style.height = `${canvas_height}px`;
   sketch_div.style.width = `${canvas_width}px`;
@@ -235,6 +238,7 @@ function drawLoading() {
   // count down from 100 to 0, then state 1
   if (loading_complete_count === 0) {
     state = 1;
+    controls_wrapper_div.classList.remove('hide');
   } else if (loading_complete_count > 0) {
     loading_complete_count--;
   }

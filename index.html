@@ -15,8 +15,21 @@
     <h1>Mouse Tracker</h1>
     <h2>A JOURNAL PROJECT BY MARS TAN</h2>
   </div>
-  <div class="right-col">
-
+  <div class="right-col"></div>
+  <div class="controls-wrapper hide">
+    <div class="controls">
+      <div class="line"></div>
+      <div class="buttons">
+        <div class="left">
+          <img src="icon/replay-black-18dp.svg" alt="replay">
+          <img src="icon/fast_rewind-24px.svg" alt="rewind">
+        </div>
+        <div class="right">
+          <img src="icon/fast_forward-24px.svg" alt="forward">
+          <img src="icon/last_page-24px.svg" alt="last">
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="app-list-wrapper">
@@ -25,17 +38,18 @@
 
 <script src="p5.min.js"></script>
 <script>
-const app_list_div = document.querySelector('.app-list');
-document.querySelector('.app-list').addEventListener('wheel', (e) => {
-  let w = app_list_div.scrollLeft + e.deltaY * 3;
-  if (w > app_list_div.scrollWidth) w = app_list_div.scrollWidth;
-  if (w < 0) w = 0;
-  console.log(w);
-  app_list_div.scrollTo({
-    left: w,
-    behavior: 'smooth'
-  });
-})
+(() => {
+  const app_list_div = document.querySelector('.app-list');
+  document.querySelector('.app-list').addEventListener('wheel', (e) => {
+    let w = app_list_div.scrollLeft + e.deltaY * 3;
+    if (w > app_list_div.scrollWidth) w = app_list_div.scrollWidth;
+    if (w < 0) w = 0;
+    app_list_div.scrollTo({
+      left: w,
+      behavior: 'smooth'
+    });
+  })
+})();
 </script>
 <script src="script.js"></script>
 </body>

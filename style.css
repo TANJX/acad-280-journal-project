@@ -20,8 +20,8 @@ body {
 
 /*16:9*/
 .sketch {
-  width: 1280px;
-  height: 720px;
+  width: 0;
+  height: 0;
   margin: auto;
   background-color: #1D1D1D;
 }
@@ -51,6 +51,59 @@ h2 {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.controls-wrapper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 1110px;
+  height: 200px;
+  bottom: 0;
+  margin: 0 auto;
+  transition: .2s;
+  opacity: 0;
+  background: rgb(0, 0, 0);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 74%);
+}
+
+.controls-wrapper.hide:hover {
+  opacity: 0;
+}
+
+.controls-wrapper:hover {
+  opacity: 1;
+}
+
+.controls {
+  position: relative;
+  margin: 0 auto;
+}
+
+.line {
+  height: 2px;
+  width: 100%;
+  background-color: #ECECEC;
+  position: absolute;
+  top: 145px;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  position: absolute;
+  top: 145px;
+}
+
+.buttons img {
+  height: 24px;
+  cursor: pointer;
+}
+
+.buttons .left {
+
 }
 
 .app-list-wrapper {
@@ -97,7 +150,6 @@ h2 {
 .app-card.selected .app-info-div p {
   color: #1D1D1D;
 }
-
 
 .app-img-div {
   width: 250px;
