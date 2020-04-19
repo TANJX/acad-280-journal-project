@@ -1,6 +1,6 @@
 const BACKEND_URL = 'https://api.marstanjx.com/acad280';
 // const BACKEND_URL = 'http://localhost:8080/acad280';
-const BACKGROUND_COLOR = '#393939';
+const BACKGROUND_COLOR = '#363636';
 const MOUSELOCATION_DIMENSION = [2560, 1440];
 
 let mouseLocation = [];
@@ -113,6 +113,7 @@ function fetch() {
         });
 
         document.querySelector(`.app-card[data-id="${selectedApp}"]`).classList.add('selected');
+        document.querySelector(`.app-list-wrapper`).classList.add('fadeIn');
         loading_complete_count = 100; // ready to go to state 1
       } else {
         state = -1;
@@ -168,13 +169,9 @@ function windowResized() {
     canvas_height = _h;
     canvas_width = _h * 16 / 9;
   }
-  controls_div.style.width = `${_w - 100}px`;
-  controls_wrapper_div.style.width = `${_w}px`;
 
   sketch_div.style.height = `${canvas_height}px`;
   sketch_div.style.width = `${canvas_width}px`;
-
-  console.log(canvas_width, canvas_height);
 
   width = element_sketch.clientWidth;
   height = element_sketch.clientHeight;
@@ -193,6 +190,10 @@ function windowResized() {
     container_offset = (width - container_width) / 2;
     container_offset_direction = false;
   }
+
+  controls_wrapper_div.style.width = `${container_width}px`;
+  controls_div.style.width = `${container_width - 100}px`;
+
   drawComplete = false;
   needRedrawBackground = true;
   resizeCanvas(width, height);
@@ -258,24 +259,36 @@ function drawLoadFailed() {
 }
 
 let drawGraphCounter = 0;
+let speed = 0;
 let drawComplete = false;
 let needRedrawBackground = true;
 
 let last_location;
+
+const pointer = document.querySelector('.pointer');
 
 function drawGraph() {
   if (drawComplete) {
     return;
   }
   const last_index = drawGraphCounter;
-  drawGraphCounter += Math.min(5, Math.max((Math.floor(mouseLocation[selectedApp].locations.length / 50)), 1));
+  if (drawGraphCounter === 0) {
+    // default speed
+    speed = Math.min(5, Math.max((Math.floor(mouseLocation[selectedApp].locations.length / 50)), 1));
+  }
+  drawGraphCounter += speed;
 
   for (let i = needRedrawBackground ? 0 : last_index; i < drawGraphCounter; i++)
     if (i < mouseLocation[selectedApp].locations.length) drawLine(i);
 
+  // update progress bar
+  let percent = drawGraphCounter / mouseLocation[selectedApp].locations.length;
+  if (percent > 1) percent = 1;
+  pointer.style.left = `${(container_width - 100) * percent}px`;
+
   needRedrawBackground = false;
 
-  fill('#333');
+  fill(BACKGROUND_COLOR);
   noStroke();
   if (container_offset_direction) {
     rect(0, 0, container_width, container_offset);
@@ -315,7 +328,7 @@ function drawLine(i) {
 
 function draw() {
   if (!drawComplete && needRedrawBackground) {
-    fill('#333');
+    fill(BACKGROUND_COLOR);
     noStroke();
     rect(0, 0, width, height);
     fill(BACKGROUND_COLOR);
@@ -336,6 +349,32 @@ function draw() {
       drawLoadFailed();
       break;
   }
+}
+
+function replay() {
+  drawGraphCounter = 0;
+  needRedrawBackground = true;
+  drawComplete = false;
+}
+
+function slower() {
+  speed -= 5;
+  if (speed <= 1) {
+    speed = 1;
+  }
+}
+
+function faster() {
+  speed += 5;
+  if (speed > 100) {
+    speed = 100;
+  }
+}
+
+function toEnd() {
+  drawGraphCounter = mouseLocation[selectedApp].locations.length;
+  needRedrawBackground = true;
+  drawComplete = false;
 }
 
 /**
