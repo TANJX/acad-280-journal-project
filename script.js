@@ -52,6 +52,10 @@ function fetch() {
     if (this.readyState === 4) {
       if (this.status === 200) {
         mouseLocation = JSON.parse(this.responseText).locations;
+        req3.send(JSON.stringify({
+          apps: mouseLocation.map(a => a.icon.replace('.png', '')),
+        }));
+
         const apps_div = document.querySelector('.app-list');
 
         // remove all children
@@ -132,6 +136,20 @@ function fetch() {
   req2.open("GET", `${BACKEND_URL}/processes`, true);
   req2.send();
 
+  const req3 = new XMLHttpRequest();
+  req3.onreadystatechange = function () {
+    if (this.readyState === 4) {
+      if (this.status === 200) {
+        document.querySelectorAll('.app-card').forEach((card) => {
+          const index = parseInt(card.getAttribute('data-id'));
+          const app_name = mouseLocation[index].icon.replace('.png', '');
+          card.querySelector('.app-img-div').style.backgroundImage = `url(${BACKEND_URL}/thumbnail/${app_name})`
+        });
+      }
+    }
+  };
+  req3.open("POST", `${BACKEND_URL}/update_thumbnail`, true);
+  req3.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 }
 
 const element_sketch = document.querySelector('#sketch');

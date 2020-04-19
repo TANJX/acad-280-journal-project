@@ -201,10 +201,6 @@ h2 {
   cursor: pointer;
 }
 
-.buttons .left {
-
-}
-
 .app-list-wrapper {
   position: absolute;
   bottom: 0;
@@ -240,6 +236,7 @@ h2 {
   border-radius: 7px;
   width: 260px;
   height: 200px;
+  cursor: pointer;
 }
 
 .app-card:hover, .app-card.selected {
