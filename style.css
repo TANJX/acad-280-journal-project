@@ -44,6 +44,14 @@ h2 {
   font-weight: 900;
 }
 
+.ui-overlay {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: contain;
+  opacity: 0;
+  transition: .3s;
+}
 
 .left-col {
   width: 200px;
@@ -52,7 +60,68 @@ h2 {
   left: 0;
 }
 
+.right-col {
+  width: 100px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.help {
+  text-align: right;
+}
+
+.help img {
+  cursor: pointer;
+  opacity: 1;
+  transition: .2s;
+}
+
+.help img:hover {
+  opacity: .8;
+}
+
+.toggles {
+  margin-top: 30px;
+}
+
+.toggle {
+  display: flex;
+  flex-direction: row-reverse;
+  opacity: 0.3;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.toggle img:first-of-type {
+  display: none;
+}
+
+.toggle img:last-of-type {
+  display: inline;
+}
+
+.toggle p {
+  color: #DADADA;
+  font-size: 12px;
+  text-align: right;
+  margin-right: 7px;
+}
+
+.toggle.on {
+  opacity: 1;
+}
+
+.toggle.on img:first-of-type {
+  display: inline;
+}
+
+.toggle.on img:last-of-type {
+  display: none;
+}
+
 .controls-wrapper {
+  z-index: 10;
   position: absolute;
   left: 0;
   right: 0;
@@ -81,6 +150,22 @@ h2 {
 .controls {
   position: relative;
   margin: 0 auto;
+}
+
+.date-left {
+  position: absolute;
+  top: 105px;
+  font-size: 13px;
+  color: #DADADA;
+}
+
+.date-right {
+  position: absolute;
+  top: 105px;
+  right: 0;
+  text-align: right;
+  font-size: 13px;
+  color: #DADADA;
 }
 
 .line {
@@ -200,6 +285,7 @@ h2 {
   border-radius: 3px;
   transition: .2s;
   opacity: 0;
+  z-index: 15;
 }
 
 .popup.active {

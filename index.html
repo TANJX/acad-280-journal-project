@@ -10,14 +10,46 @@
 <body>
 
 <div class="wrapper">
+  <div class="ui-overlay"></div>
   <div class="sketch" id="sketch"></div>
+
   <div class="left-col">
     <h1>Mouse Tracker</h1>
     <h2>A JOURNAL PROJECT BY MARS TAN</h2>
   </div>
-  <div class="right-col"></div>
+
+  <div class="right-col">
+    <div class="help">
+      <img src="icon/help-24px.svg" alt="help" onclick="showHelp()">
+    </div>
+    <div class="toggles">
+      <div class="toggle" onclick="toggle(1)">
+        <img src="icon/check-24px.svg" alt="check">
+        <img src="icon/close-24px.svg" alt="no">
+        <p>APP UI</p>
+      </div>
+      <div class="toggle on" onclick="toggle(2)">
+        <img src="icon/check-24px.svg" alt="check">
+        <img src="icon/close-24px.svg" alt="no">
+        <p>LINES</p>
+      </div>
+      <div class="toggle on" onclick="toggle(3)">
+        <img src="icon/check-24px.svg" alt="check">
+        <img src="icon/close-24px.svg" alt="no">
+        <p>GLOWS</p>
+      </div>
+      <div class="toggle on" onclick="toggle(4)">
+        <img src="icon/check-24px.svg" alt="check">
+        <img src="icon/close-24px.svg" alt="no">
+        <p>POINTS</p>
+      </div>
+    </div>
+  </div>
+
   <div class="controls-wrapper hide">
     <div class="controls">
+      <p class="date-left"></p>
+      <p class="date-right"></p>
       <div class="line"></div>
       <div class="pointer"></div>
       <div class="buttons">
@@ -33,12 +65,14 @@
     </div>
   </div>
 </div>
+
 <div class="app-list-wrapper">
   <div class="app-list"></div>
 </div>
 
 <div class="popup"><p>Text</p></div>
 
+<script src="moment.min.js"></script>
 <script src="p5.min.js"></script>
 <script>
 (() => {

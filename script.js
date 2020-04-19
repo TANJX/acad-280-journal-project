@@ -1,9 +1,9 @@
-const BACKEND_URL = 'https://api.marstanjx.com/acad280';
-// const BACKEND_URL = 'http://localhost:8080/acad280';
+// const BACKEND_URL = 'https://api.marstanjx.com/acad280';
+const BACKEND_URL = 'http://localhost:8080/acad280';
 const BACKGROUND_COLOR = '#363636';
-const MOUSELOCATION_DIMENSION = [2560, 1440];
 
 let mouseLocation = [];
+let location_dimension = [2560, 1400];
 let process = {};
 
 /**
@@ -73,15 +73,15 @@ function fetch() {
 
           const img_div = document.createElement('div');
           img_div.classList.add('app-img-div');
-          img_div.style.backgroundImage = "url('img/sample-ss.png')";
+          img_div.style.backgroundImage = "url('app-icon/sample-ss.png')";
 
           const info_div = document.createElement('div');
           info_div.classList.add('app-info-div');
 
           const img = document.createElement('img');
-          img.setAttribute('src', `img/${app.icon}`);
+          img.setAttribute('src', `app-icon/${app.icon}`);
           img.onerror = function () {
-            img.src = "img/ae.png";
+            img.src = "app-icon/ae.png";
           };
           const p = document.createElement('p');
           p.textContent = app.name;
@@ -100,19 +100,15 @@ function fetch() {
               ele = ele.parentElement;
             }
             if (!ele.classList.contains('selected')) {
-              document.querySelector('.app-card.selected').classList.remove('selected');
-              selectedApp = parseInt(ele.getAttribute('data-id'));
-              drawGraphCounter = 0;
-              drawComplete = false;
-              needRedrawBackground = true;
+              switchApp(parseInt(ele.getAttribute('data-id')));
               ele.classList.add('selected');
             }
           });
+
           app_div_wrapper.appendChild(app_div);
           apps_div.appendChild(app_div_wrapper);
         });
-
-        document.querySelector(`.app-card[data-id="${selectedApp}"]`).classList.add('selected');
+        switchApp(0);
         document.querySelector(`.app-list-wrapper`).classList.add('fadeIn');
         loading_complete_count = 100; // ready to go to state 1
       } else {
@@ -155,28 +151,34 @@ function setup() {
 }
 
 const sketch_div = document.getElementById('sketch');
+const ui_overlay_div = document.querySelector('.ui-overlay');
 const controls_div = document.querySelector('.controls');
 const controls_wrapper_div = document.querySelector('.controls-wrapper');
+const date_left = document.querySelector('.date-left');
+const date_right = document.querySelector('.date-right');
 
 function windowResized() {
   const _w = document.body.clientWidth - 400;
   const _h = document.body.clientHeight - 330;
 
   let canvas_width = _w;
-  let canvas_height = _w / 16 * 9;
+  let canvas_height = _w / 64 * 35;
 
   if (canvas_height > _h) {
     canvas_height = _h;
-    canvas_width = _h * 16 / 9;
+    canvas_width = _h * 64 / 35;
   }
 
   sketch_div.style.height = `${canvas_height}px`;
   sketch_div.style.width = `${canvas_width}px`;
+  ui_overlay_div.style.height = `${canvas_height}px`;
+  ui_overlay_div.style.width = `${canvas_width}px`;
+  ui_overlay_div.style.left = `${(document.body.clientWidth - canvas_width - 100) / 2}px`;
 
   width = element_sketch.clientWidth;
   height = element_sketch.clientHeight;
 
-  const ratio = MOUSELOCATION_DIMENSION[0] / MOUSELOCATION_DIMENSION[1];
+  const ratio = location_dimension[0] / location_dimension[1];
   // full width
   container_width = width;
   container_height = width / ratio;
@@ -191,12 +193,41 @@ function windowResized() {
     container_offset_direction = false;
   }
 
-  controls_wrapper_div.style.width = `${container_width}px`;
-  controls_div.style.width = `${container_width - 100}px`;
+  // progress bar
+  controls_wrapper_div.style.width = `${canvas_width}px`;
+  controls_div.style.width = `${canvas_width - 100}px`;
 
   drawComplete = false;
   needRedrawBackground = true;
   resizeCanvas(width, height);
+}
+
+let locationLength = 0;
+let date_start = 0;
+let date_end = 0;
+
+function switchApp(i) {
+  // app card highlight
+  if (document.querySelector('.app-card.selected'))
+    document.querySelector('.app-card.selected').classList.remove('selected');
+  document.querySelector(`.app-card[data-id="${i}"]`).classList.add('selected');
+
+  drawGraphCounter = 0;
+  selectedApp = i;
+  windowResized();
+  drawComplete = false;
+  needRedrawBackground = true;
+  locationLength = mouseLocation[selectedApp].locations.length;
+  location_dimension[0] = mouseLocation[selectedApp].locations.width || 2560;
+  location_dimension[1] = mouseLocation[selectedApp].locations.height || 1400;
+
+  // progress bar date
+  date_start = mouseLocation[selectedApp].locations[0].flat()[0];
+  date_end = mouseLocation[selectedApp].locations[locationLength - 1].flat()[0];
+  date_left.textContent = moment(date_start * 1000).format('M/D/Y');
+  date_right.textContent = moment(date_end * 1000).format('M/D/Y');
+
+  ui_overlay_div.style.backgroundImage = `url('ui/${mouseLocation[selectedApp].icon}')`;
 }
 
 let loading_count = 0;
@@ -263,8 +294,6 @@ let speed = 0;
 let drawComplete = false;
 let needRedrawBackground = true;
 
-let last_location;
-
 const pointer = document.querySelector('.pointer');
 
 function drawGraph() {
@@ -274,16 +303,18 @@ function drawGraph() {
   const last_index = drawGraphCounter;
   if (drawGraphCounter === 0) {
     // default speed
-    speed = Math.min(5, Math.max((Math.floor(mouseLocation[selectedApp].locations.length / 50)), 1));
+    speed = Math.min(5, Math.max((Math.floor(locationLength / 50)), 1));
   }
   drawGraphCounter += speed;
 
   for (let i = needRedrawBackground ? 0 : last_index; i < drawGraphCounter; i++)
-    if (i < mouseLocation[selectedApp].locations.length) drawLine(i);
+    if (i < locationLength) drawLine(i);
 
   // update progress bar
-  let percent = drawGraphCounter / mouseLocation[selectedApp].locations.length;
-  if (percent > 1) percent = 1;
+  let currentIndex = Math.min(drawGraphCounter, locationLength - 1);
+  let currentTime = mouseLocation[selectedApp].locations[currentIndex].flat()[0];
+
+  let percent = (currentTime - date_start) / (date_end - date_start);
   pointer.style.left = `${(container_width - 100) * percent}px`;
 
   needRedrawBackground = false;
@@ -298,7 +329,7 @@ function drawGraph() {
     rect(container_offset + container_width, 0, container_offset, container_height);
   }
 
-  if (drawGraphCounter >= mouseLocation[selectedApp].locations.length) {
+  if (drawGraphCounter >= locationLength) {
     drawComplete = true;
     return;
   }
@@ -306,24 +337,36 @@ function drawGraph() {
 }
 
 function drawLine(i) {
-  const location = mouseLocation[selectedApp].locations[i];
-  const x = location[1] / MOUSELOCATION_DIMENSION[0] * container_width
-    + (container_offset_direction ? 0 : container_offset);
-  const y = location[2] / MOUSELOCATION_DIMENSION[1] * container_height
-    + (container_offset_direction ? container_offset : 0);
-  noStroke();
-  fill('#fff');
-  circle(x, y, 1.1);
-  if (last_location && location[0] - last_location[2] < 0.5) {
-    strokeWeight(1);
-    stroke(`hsla(0, 0%, 100%, .2)`);
-    line(x, y, last_location[0], last_location[1]);
-
-    strokeWeight(100);
-    stroke(`hsla(${i % 360},70%,60%,0.005)`);
-    line(x, y, last_location[0], last_location[1]);
+  let last_time = 0, last_x, last_y;
+  if (i > 1) {
+    last_time = mouseLocation[selectedApp].locations[i - 1].flat()[0];
+    last_x = mouseLocation[selectedApp].locations[i - 1][1] / location_dimension[0] * container_width
+      + (container_offset_direction ? 0 : container_offset);
+    last_y = mouseLocation[selectedApp].locations[i - 1][2] / location_dimension[1] * container_height
+      + (container_offset_direction ? container_offset : 0);
   }
-  last_location = [x, y, location[0]];
+  const location = mouseLocation[selectedApp].locations[i];
+  const x = location[1] / location_dimension[0] * container_width
+    + (container_offset_direction ? 0 : container_offset);
+  const y = location[2] / location_dimension[1] * container_height
+    + (container_offset_direction ? container_offset : 0);
+  if (show_points) {
+    noStroke();
+    fill('#fff');
+    circle(x, y, 1.1);
+  }
+  if (last_time && location[0] - last_time < 0.5) {
+    if (show_lines) {
+      strokeWeight(1);
+      stroke(`hsla(0, 0%, 100%, .2)`);
+      line(x, y, last_x, last_y);
+    }
+    if (show_glow) {
+      strokeWeight(100);
+      stroke(`hsla(${i % 360},70%,60%,0.005)`);
+      line(x, y, last_x, last_y);
+    }
+  }
 }
 
 function draw() {
@@ -359,7 +402,7 @@ function replay() {
 
 function slower() {
   speed -= 5;
-  if (speed <= 1) {
+  if (speed < 1) {
     speed = 1;
   }
 }
@@ -372,9 +415,56 @@ function faster() {
 }
 
 function toEnd() {
-  drawGraphCounter = mouseLocation[selectedApp].locations.length;
+  drawGraphCounter = locationLength - 1;
   needRedrawBackground = true;
   drawComplete = false;
+}
+
+let show_lines = true;
+let show_glow = true;
+let show_points = true;
+
+/**
+ * @param id
+ * 1: ui
+ * 2: lines
+ * 3: glows
+ * 4: points
+ */
+function toggle(id) {
+  const el = document.querySelector(`.toggle:nth-of-type(${id})`);
+  let state = true;
+  if (el.classList.contains('on')) {
+    el.classList.remove('on');
+    // to turn off
+    state = false;
+  } else {
+    el.classList.add('on');
+    // to turn on
+  }
+  switch (id) {
+    case 1:
+      ui_overlay_div.style.opacity = state ? '0.5' : '0';
+      break;
+    case 2:
+      show_lines = state;
+      break;
+    case 3:
+      show_glow = state;
+      break;
+    case 4:
+      show_points = state;
+      break;
+  }
+  // toggle ui does not need redraw
+  if (id > 1) {
+    drawComplete = false;
+    needRedrawBackground = true;
+  }
+}
+
+function showHelp() {
+
 }
 
 /**
