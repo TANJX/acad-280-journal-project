@@ -86,7 +86,7 @@ function fetch() {
           const img = document.createElement('img');
           img.setAttribute('src', `app-icon/${app.icon}`);
           img.onerror = function () {
-            img.src = "app-icon/ae.png";
+            img.src = "app-icon/default.png";
           };
           const p = document.createElement('p');
           p.textContent = app.name;
@@ -116,6 +116,7 @@ function fetch() {
         switchApp(0);
         document.querySelector(`.app-list-wrapper`).classList.add('fadeIn');
         loading_complete_count = 100; // ready to go to state 1
+        point_count.style.opacity = '1';
       } else {
         state = -1;
       }
@@ -181,24 +182,26 @@ const controls_div = document.querySelector('.controls');
 const controls_wrapper_div = document.querySelector('.controls-wrapper');
 const date_left = document.querySelector('.date-left');
 const date_right = document.querySelector('.date-right');
+const point_count = document.querySelector('.point-info');
+const point_count_num = document.querySelector('.point-info span');
 
 function windowResized() {
   const _w = document.body.clientWidth - 400;
   const _h = document.body.clientHeight - 330;
 
-  let canvas_width = _w;
-  let canvas_height = _w / 64 * 35;
+  width = _w;
+  height = _w / 64 * 35;
 
-  if (canvas_height > _h) {
-    canvas_height = _h;
-    canvas_width = _h * 64 / 35;
+  if (height > _h) {
+    height = _h;
+    width = _h * 64 / 35;
   }
 
-  sketch_div.style.height = `${canvas_height}px`;
-  sketch_div.style.width = `${canvas_width}px`;
-  ui_overlay_div.style.height = `${canvas_height}px`;
-  ui_overlay_div.style.width = `${canvas_width}px`;
-  ui_overlay_div.style.left = `${(document.body.clientWidth - canvas_width - 100) / 2}px`;
+  sketch_div.style.height = `${height}px`;
+  sketch_div.style.width = `${width}px`;
+  ui_overlay_div.style.height = `${height}px`;
+  ui_overlay_div.style.width = `${width}px`;
+  ui_overlay_div.style.left = `${(document.body.clientWidth - width - 100) / 2}px`;
 
   width = element_sketch.clientWidth;
   height = element_sketch.clientHeight;
@@ -218,9 +221,15 @@ function windowResized() {
     container_offset_direction = false;
   }
 
+  if (!container_offset_direction) {
+    const ui_img = ui_overlay_div.querySelector(`img[data-app="${selectedApp}"]`);
+    if (ui_img)
+      ui_img.style.left = `${container_offset}px`;
+  }
+
   // progress bar
-  controls_wrapper_div.style.width = `${canvas_width}px`;
-  controls_div.style.width = `${canvas_width - 100}px`;
+  controls_wrapper_div.style.width = `${width}px`;
+  controls_div.style.width = `${width - 100}px`;
 
   drawComplete = false;
   needRedrawBackground = true;
@@ -238,13 +247,17 @@ function switchApp(i) {
   document.querySelector(`.app-card[data-id="${i}"]`).classList.add('selected');
 
   drawGraphCounter = 0;
+  const old_img = ui_overlay_div.querySelector(` img[data-app="${selectedApp}"]`);
+  if (old_img) {
+    old_img.style.opacity = '0';
+  }
   selectedApp = i;
+  location_dimension[0] = mouseLocation[selectedApp].width || 2560;
+  location_dimension[1] = mouseLocation[selectedApp].height || 1400;
   windowResized();
   drawComplete = false;
   needRedrawBackground = true;
   locationLength = mouseLocation[selectedApp].locations.length;
-  location_dimension[0] = mouseLocation[selectedApp].locations.width || 2560;
-  location_dimension[1] = mouseLocation[selectedApp].locations.height || 1400;
 
   // progress bar date
   date_start = mouseLocation[selectedApp].locations[0].flat()[0];
@@ -252,7 +265,25 @@ function switchApp(i) {
   date_left.textContent = moment(date_start * 1000).format('M/D/Y');
   date_right.textContent = moment(date_end * 1000).format('M/D/Y');
 
-  ui_overlay_div.style.backgroundImage = `url('ui/${mouseLocation[selectedApp].icon}')`;
+  const img = ui_overlay_div.querySelector(` img[data-app="${i}"]`);
+  if (img) {
+    img.style.opacity = '1';
+  } else {
+    const ui_img = document.createElement('img');
+    ui_img.style.opacity = '0';
+    ui_img.src = `ui/${mouseLocation[selectedApp].icon}`;
+    ui_img.setAttribute('data-app', i);
+    ui_img.onload = (e) => {
+      ui_img.style.opacity = '1';
+    };
+    if (container_offset_direction) {
+      ui_img.style.width = '100%';
+    } else {
+      ui_img.style.height = '100%';
+      ui_img.style.left = `${container_offset}px`;
+    }
+    ui_overlay_div.appendChild(ui_img);
+  }
 }
 
 let loading_count = 0;
@@ -340,7 +371,7 @@ function drawGraph() {
   let currentTime = mouseLocation[selectedApp].locations[currentIndex].flat()[0];
 
   let percent = (currentTime - date_start) / (date_end - date_start);
-  pointer.style.left = `${(container_width - 100) * percent}px`;
+  pointer.style.left = `${(width - 100) * percent}px`;
 
   needRedrawBackground = false;
 
@@ -354,7 +385,11 @@ function drawGraph() {
     rect(container_offset + container_width, 0, container_offset, container_height);
   }
 
+  point_count_num.textContent = drawGraphCounter;
+
   if (drawGraphCounter >= locationLength) {
+    point_count_num.textContent = drawGraphCounter;
+    drawGraphCounter = locationLength;
     drawComplete = true;
     return;
   }
@@ -387,8 +422,8 @@ function drawLine(i) {
       line(x, y, last_x, last_y);
     }
     if (show_glow) {
-      strokeWeight(100);
-      stroke(`hsla(${i % 360},70%,60%,0.005)`);
+      strokeWeight(70);
+      stroke(`hsla(${i % 360},70%,60%,0.002)`);
       line(x, y, last_x, last_y);
     }
   }

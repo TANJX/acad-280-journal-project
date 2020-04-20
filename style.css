@@ -25,7 +25,7 @@ body {
   margin: auto;
 }
 
-h1, h2 {
+h1, h2, p {
   color: #DADADA;
 }
 
@@ -46,11 +46,21 @@ h2 {
 
 .ui-overlay {
   position: absolute;
-  background-repeat: no-repeat;
-  background-position: top left;
-  background-size: contain;
   opacity: 0;
   transition: .3s;
+  overflow: hidden;
+}
+
+.ui-overlay img {
+  transition: .3s;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.point-info {
+  opacity: 0;
+  transition: .5s;
 }
 
 .left-col {
@@ -237,6 +247,7 @@ h2 {
   width: 260px;
   height: 188px;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .app-card:hover .app-info-div, .app-card.selected .app-info-div {
@@ -249,7 +260,7 @@ h2 {
 
 .app-img-div {
   width: 250px;
-  height: 140px;
+  height: 136px;
   border-radius: 9px;
   overflow: hidden;
   opacity: 0;
