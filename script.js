@@ -1,5 +1,6 @@
-// const BACKEND_URL = 'https://api.marstanjx.com/acad280';
-const BACKEND_URL = 'http://localhost:8080/acad280';
+const BACKEND_URL = document.domain === 'localhost' ?
+  'http://localhost:8080/acad280' :
+  'https://api.marstanjx.com/acad280';
 const BACKGROUND_COLOR = '#363636';
 
 let mouseLocation = [];
@@ -77,7 +78,7 @@ function fetch() {
 
           const img_div = document.createElement('div');
           img_div.classList.add('app-img-div');
-          img_div.style.backgroundImage = "url('app-icon/sample-ss.png')";
+          img_div.style.backgroundColor = '#363636';
 
           const info_div = document.createElement('div');
           info_div.classList.add('app-info-div');
@@ -143,7 +144,13 @@ function fetch() {
         document.querySelectorAll('.app-card').forEach((card) => {
           const index = parseInt(card.getAttribute('data-id'));
           const app_name = mouseLocation[index].icon.replace('.png', '');
-          card.querySelector('.app-img-div').style.backgroundImage = `url(${BACKEND_URL}/thumbnail/${app_name})`
+          const img = document.createElement('img');
+          img.onload = function (e) {
+            e.path[1].style.opacity = '1';
+          };
+          img.src = `${BACKEND_URL}/thumbnail/${app_name}`;
+          img.alt = app_name;
+          card.querySelector('.app-img-div').appendChild(img);
         });
       }
     }

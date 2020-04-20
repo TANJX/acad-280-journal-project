@@ -1,5 +1,6 @@
-const BACKEND_URL = 'https://api.marstanjx.com/acad280';
-// const BACKEND_URL = 'http://localhost:8080/acad280';
+const BACKEND_URL = document.domain === 'localhost' ?
+  'http://localhost:8080/acad280' :
+  'https://api.marstanjx.com/acad280';
 const BACKGROUND_COLOR = '#363636';
 
 let mouseLocation = [];

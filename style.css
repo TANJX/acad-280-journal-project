@@ -235,33 +235,39 @@ h2 {
   padding: 5px;
   border-radius: 7px;
   width: 260px;
-  height: 200px;
+  height: 188px;
   cursor: pointer;
 }
 
-.app-card:hover, .app-card.selected {
-  background-color: #bababa;
+.app-card:hover .app-info-div, .app-card.selected .app-info-div {
+  background-color: #919191;
 }
 
-.app-card:hover .app-info-div p,
-.app-card.selected .app-info-div p {
-  color: #1D1D1D;
+.app-card.selected .app-info-div {
+  background-color: #4a4a4a;
 }
 
 .app-img-div {
   width: 250px;
   height: 140px;
   border-radius: 9px;
-  background-image: url('img/sample-ss.png');
-  background-size: cover;
-  background-repeat: no-repeat;
+  overflow: hidden;
+  opacity: 0;
+  transition: .6s;
+}
+
+.app-img-div img {
+  width: 100%;
 }
 
 .app-info-div {
-  padding-top: 7px;
+  border-radius: 8px;
+  padding: 4px 10px;
+  margin-top: 3px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: .2s;
 }
 
 .app-info-div img {
