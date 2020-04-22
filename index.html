@@ -73,6 +73,68 @@
 
 <div class="popup"><p>Text</p></div>
 
+<div class="readme-wrapper">
+  <div class="readme-article">
+    <img src="icon/close-black.svg" alt="close" onclick="hideHelp()">
+    <p>Mouse Tracker is a web application that shows historical views of my mouse movement for different applications
+      over one week in the style of network graphs. By rendering a overcrowded amount of data, I want to observe some
+      commonalities of my mouse movement-common paths, hotspot areas, and distribution of mouse locations. Each of the
+      three commonalities corresponds to a toggle on the top right of the app-Show Lines, Show Glows, and Show Points.
+      Users can also turn on the simplified UI image to give a context of the mouse locations. </p>
+    <h3>Data collection</h3>
+
+    <p>I wrote a Python script that captures my mouse locations on my Windows computer. In addition to the x and y
+      position of the mouse location, it also query the name of the current active process, like “chrome.exe”, and the
+      dimension and the position of the window. Mouse locations should be relative to the location of the window, and
+      those are out of the window area are not recorded. I struggled with the number of records per second. I didn’t
+      realize that my mouse moves very quickly. It seems that I need at least 15 captures per second so that by
+      connecting the mouse locations in lines, it shows a relatively smooth path that reflects my original mouse
+      movement. 15 entries per second is a lot of data! To optimize this, I added more rules. If the mouse moves within
+      7 pixels relative to last record, it does not record, so it only captures when my mouse is actively moving. Also,
+      I added a blacklist of apps that I don’t want to capture. With the data collection script is ready, now I move on
+      the back end side.</p>
+
+    <p><a href="#">Source Code</a></p>
+
+    <h3>Back end</h3>
+
+    <p>The backend is a simple NodeJS and expressjs server that connects to a Mongodb server and serves as a RESTful
+      API. It has two purposes: to receive and store data from the python script, and to organize and send data to the
+      front end. The data is stored under two data models. The process model store the process name, full name, and the
+      window dimension. The MouseLocation model stores the time stamp, x position, y position, and the process ID. The
+      python saves the mouse location data every minute. Within a few days, I had more than 130k entries! Then I moved
+      on to the visualize the data on a web page. Before I do that, I create some API endpoints that organize the
+      location data by apps. puppeteer</p>
+
+    <p><a href="#">Source Code</a></p>
+
+    <h3>Front end</h3>
+
+    <p>
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5js.
+      The front end dis built with vanilla JavaScript with p5js.
+    </p>
+
+    <h3>Deployment</h3>
+
+    <p>It’s very frustrating that the program works on your local machine but breaks on production server due to
+      performance issues. Docker</p>
+
+    <p>Mars Tan
+      <br>
+      April 2020</p>
+  </div>
+</div>
+
 <script src="moment.min.js"></script>
 <script src="p5.min.js"></script>
 <script>

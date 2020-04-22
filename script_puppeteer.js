@@ -1,35 +1,24 @@
 const BACKEND_URL = document.domain === 'localhost' ?
-  'http://localhost:8080/acad280' :
+  'http://localhost:8000/acad280' :
   'https://api.marstanjx.com/acad280';
 const BACKGROUND_COLOR = '#363636';
 
 let mouseLocation = [];
 let location_dimension = [2560, 1400];
-let process = {};
+let processes = [];
 
 let selectedApp = 0;
 
 function fetch() {
   state = 0;
-  const req1 = new XMLHttpRequest();
-  req1.onreadystatechange = function () {
-    if (this.readyState === 4) {
-      if (this.status === 200) {
-        mouseLocation = JSON.parse(this.responseText).locations;
-        let canvas = createCanvas(width, height);
-        canvas.parent("sketch");
-        windowResized();
-      }
-    }
-  };
-  req1.open("GET", `${BACKEND_URL}/locations`, true);
-
   const req2 = new XMLHttpRequest();
   req2.onreadystatechange = function () {
     if (this.readyState === 4) {
       if (this.status === 200) {
-        process = JSON.parse(this.responseText);
-        req1.send();
+        processes = JSON.parse(this.responseText);
+        let canvas = createCanvas(width, height);
+        canvas.parent("sketch");
+        windowResized();
       }
     }
   };
@@ -38,13 +27,23 @@ function fetch() {
 }
 
 function switchApp(app) {
-  for (let i = 0; i < mouseLocation.length; i++) {
-    if (mouseLocation[i].icon === `${app}.png`) {
+  for (let i = 0; i < processes.length; i++) {
+    if (processes[i].name === app) {
       selectedApp = i;
-      locationLength = mouseLocation[selectedApp].locations.length;
-      location_dimension[0] = mouseLocation[selectedApp].locations.width || 2560;
-      location_dimension[1] = mouseLocation[selectedApp].locations.height || 1400;
-      drawGraph();
+      const req1 = new XMLHttpRequest();
+      req1.onreadystatechange = function () {
+        if (this.readyState === 4) {
+          if (this.status === 200) {
+            mouseLocation[i] = JSON.parse(this.responseText).locations;
+            locationLength = mouseLocation[i].length;
+            location_dimension[0] = processes[i].width || 2560;
+            location_dimension[1] = processes[i].height || 1400;
+            drawGraph();
+          }
+        }
+      };
+      req1.open("GET", `${BACKEND_URL}/locations/${processes[i].id}`, true);
+      req1.send();
       break;
     }
   }
@@ -112,13 +111,13 @@ function drawGraph() {
 function drawLine(i) {
   let last_time = 0, last_x, last_y;
   if (i > 1) {
-    last_time = mouseLocation[selectedApp].locations[i - 1].flat()[0];
-    last_x = mouseLocation[selectedApp].locations[i - 1][1] / location_dimension[0] * container_width
+    last_time = mouseLocation[selectedApp][i - 1][0];
+    last_x = mouseLocation[selectedApp][i - 1][1] / location_dimension[0] * container_width
       + (container_offset_direction ? 0 : container_offset);
-    last_y = mouseLocation[selectedApp].locations[i - 1][2] / location_dimension[1] * container_height
+    last_y = mouseLocation[selectedApp][i - 1][2] / location_dimension[1] * container_height
       + (container_offset_direction ? container_offset : 0);
   }
-  const location = mouseLocation[selectedApp].locations[i];
+  const location = mouseLocation[selectedApp][i];
   const x = location[1] / location_dimension[0] * container_width
     + (container_offset_direction ? 0 : container_offset);
   const y = location[2] / location_dimension[1] * container_height
