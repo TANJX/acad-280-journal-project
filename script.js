@@ -96,7 +96,6 @@ function fetch() {
 
         switchApp(0);
         document.querySelector(`.app-list-wrapper`).classList.add('fadeIn');
-        point_count.style.opacity = '1';
         /*
                 req_thumbnail.send(JSON.stringify({
                   apps: processes.map(a => a.name),
@@ -238,6 +237,7 @@ function switchApp(i) {
     date_left.textContent = '';
     date_right.textContent = '';
     pointer.style.left = '0';
+    point_count.style.opacity = '0';
     controls_wrapper_div.classList.add('hide');
 
     const req = new XMLHttpRequest();
@@ -282,7 +282,7 @@ function switchApp(i) {
       img.style.opacity = '0';
       img.src = `ui/${processes[selectedApp].name}.png`;
       img.setAttribute('data-app', i);
-      img.onload = (e) => {
+      img.onload = () => {
         ui_image_ready = true;
       };
       if (container_offset_direction) {
@@ -291,11 +291,13 @@ function switchApp(i) {
         img.style.height = '100%';
         img.style.left = `${container_offset}px`;
       }
-      img.onerror = (e) => {
+      img.onerror = () => {
         img.style.display = 'none';
       }
       ui_overlay_div.appendChild(img);
     }
+    point_count.style.opacity = '1';
+    point_count_num.textContent = '0';
   }
 }
 
@@ -383,7 +385,7 @@ function drawGraph() {
 
   // update progress bar
   let currentIndex = Math.min(drawGraphCounter, locationLength - 1);
-  let currentTime = mouseLocation[selectedApp][currentIndex][0];
+  // let currentTime = mouseLocation[selectedApp][currentIndex][0];
 
   // let percent = (currentTime - date_start) / (date_end - date_start);
   let percent = currentIndex / locationLength;

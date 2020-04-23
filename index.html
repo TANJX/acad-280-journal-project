@@ -111,23 +111,25 @@
     <h3>Front end</h3>
 
     <p>
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end is built with vanilla JavaScript with p5js.
-      The front end dis built with vanilla JavaScript with p5js.
+      The front end is built with vanilla JavaScript with p5.js. To display the point properly and maximize the usage of
+      the space on the screen, I need to remap the location of points based on the original position, window size of the
+      app, the size of the user's browser. What you see is the second version of the UI design. I redid the UI to
+      display a list of app thumbnails. I also added an extra endpoint on my NodeJS to take screenshots of my webpage
+      using Google puppeteer, so the thumbnails are updated automatically. The mouse paths are drawn in the order of
+      time. Users can control the speed, jump to the back, or replay.
     </p>
+
+    <p><a href="#">Source Code</a></p>
 
     <h3>Deployment</h3>
 
     <p>It’s very frustrating that the program works on your local machine but breaks on production server due to
-      performance issues. Docker</p>
+      performance issues. I deployed my node server to docker, and when I queried 130k entries at once, the server
+      crashed. To optimize this, I modified my endpoints to only query one app per HTTP request. Also, the puppeteer
+      barely works because it launches a headless chrome and open the pages in my server. I had to remove this feature
+      on the backend and instead just use static files.</p>
+
+    <br>
 
     <p>Mars Tan
       <br>

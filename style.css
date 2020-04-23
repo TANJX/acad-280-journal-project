@@ -328,6 +328,7 @@ h2 {
   z-index: 50;
   opacity: 0;
   transition: .5s;
+  display: none;
 }
 
 .readme-article {
