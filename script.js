@@ -52,7 +52,12 @@ function fetch() {
 
           const thumbnail_img = document.createElement('img');
           thumbnail_img.onload = function (e) {
-            e.path[1].style.opacity = '1';
+            if (e.path) {
+              e.path[1].style.opacity = '1';
+            } else {
+              // safari
+              e.target.style.opacity = '1';
+            }
           };
           thumbnail_img.src = `thumbnail/${app.name}.png`;
           thumbnail_img.alt = app.name;
