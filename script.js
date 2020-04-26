@@ -1,6 +1,4 @@
-const BACKEND_URL = document.domain === 'localhost' ?
-  'http://localhost:8000/acad280' :
-  'https://api.marstanjx.com/acad280';
+const BACKEND_URL = 'https://api.marstanjx.com/acad280';
 const BACKGROUND_COLOR = '#363636';
 
 let mouseLocation = [];
@@ -56,7 +54,7 @@ function fetch() {
               e.path[1].style.opacity = '1';
             } else {
               // safari
-              e.target.style.opacity = '1';
+              e.target.parentElement.style.opacity = '1';
             }
           };
           thumbnail_img.src = `thumbnail/${app.name}.png`;
@@ -171,6 +169,8 @@ function windowResized() {
   if (height > _h) {
     height = _h;
     width = _h * 64 / 35;
+  } else {
+    // document.querySelector(`.app-list-wrapper`).style.transform = `translateY(${-(document.body.clientHeight - height - 300)}px)`;
   }
 
   sketch_div.style.height = `${height}px`;
@@ -394,7 +394,7 @@ function drawGraph() {
 
   // let percent = (currentTime - date_start) / (date_end - date_start);
   let percent = currentIndex / locationLength;
-  pointer.style.left = `${(width - 100) * percent}px`;
+  pointer.style.width = `${percent * 100}%`;
 
   needRedrawBackground = false;
 

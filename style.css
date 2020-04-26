@@ -179,21 +179,19 @@ h2 {
 }
 
 .line {
-  height: 2px;
+  height: 3px;
   width: 100%;
-  background-color: #ECECEC;
+  background-color: #767676;
   position: absolute;
   top: 145px;
 }
 
 .pointer {
-  height: 10px;
-  width: 10px;
-  border-radius: 100%;
-  background-color: #ECECEC;
+  height: 3px;
+  width: 100%;
+  background-color: #fcfcfc;
   position: absolute;
   top: 145px;
-  transform: translateY(-4px);
   left: 0;
 }
 
